@@ -1,0 +1,14 @@
+<p>{{displayHours || 0}}:{{ displayMinutes || 0 }}:{{ displaySeconds || 0 }}</p>
+
+<div [formGroup]="timerValuesForm">
+  <label>Hours
+  <input placeholder="Hours" formControlName="hours">
+  </label>
+  <label>Minutes
+  <input placeholder="Minutes" formControlName="minutes">
+  </label>
+  <label>Seconds
+  <input placeholder="Seconds" formControlName="seconds">
+  </label>
+</div>
+
