@@ -1,8 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CountdownService} from '../../services/countdown.service';
 import {TimerActionEnum} from '../../enums/timer-action.enum';
-import {Observable, Subscription, timer} from 'rxjs';
-import {finalize, takeUntil} from 'rxjs/operators';
+import {fromEvent, Observable, Subscription, timer} from 'rxjs';
+import {buffer, filter, finalize, takeUntil, throttleTime} from 'rxjs/operators';
 
 @Component({
   selector: 'app-buttons',
@@ -15,6 +15,7 @@ export class ButtonsComponent implements OnInit, OnDestroy {
   private start: boolean;
   private doubleClickTimer: Observable<number>;
   private isTimerOpened: boolean;
+  private click$ = fromEvent(document, 'click');
 
   constructor(
     private countdownService: CountdownService
@@ -41,7 +42,11 @@ export class ButtonsComponent implements OnInit, OnDestroy {
       this.countdownService.setTimerAction(TimerActionEnum.Wait);
     }
     this.isTimerOpened = true;
-    timer(300).pipe(finalize(() => this.isTimerOpened = false)).subscribe();
+    this.click$.pipe(
+      buffer(this.click$.pipe(throttleTime(300))),
+      filter(clickArray => clickArray.length > 1)
+    ).pipe(finalize(() => this.isTimerOpened = false)).subscribe();
+    // timer(300).pipe(finalize(() => this.isTimerOpened = false)).subscribe();
   }
 
   stopTimer() {
